@@ -40,22 +40,27 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import Imputer
 import missingno as msno
+import matplotlib.gridspec as gridspec
 
 
 df = pd.read_csv('diabetes_dataset.csv')
 df.head()
+print(df.shape)
 #print(df.shape)
-#print(df.isnull().any().sum())
+
 
 msno.matrix(df)
 #%%
-#df.isnull().sum()
 
-imputer_glucose = Imputer(missing_values=np.nan, strategy='median', axis=0)
-imputer_bloodpressure = Imputer(missing_values=np.nan, strategy='median', axis=0)
-imputer_skinthickness = Imputer(missing_values=np.nan, strategy='median', axis=0)
-imputer_insulin = Imputer(missing_values=np.nan, strategy='median', axis=0)
-imputer_bmi = Imputer(missing_values=np.nan, strategy='median', axis=0)
+df.isnull().sum()
+
+#%%
+
+imputer_glucose = Imputer(missing_values=np.nan, strategy='mean', axis=0)
+imputer_bloodpressure = Imputer(missing_values=np.nan, strategy='mean', axis=0)
+imputer_skinthickness = Imputer(missing_values=np.nan, strategy='mean', axis=0)
+imputer_insulin = Imputer(missing_values=np.nan, strategy='mean', axis=0)
+imputer_bmi = Imputer(missing_values=np.nan, strategy='mean', axis=0)
 
 df[['Glucose']] = imputer_glucose.fit_transform(df[['Glucose']])
 df[['BloodPressure']] = imputer_bloodpressure.fit_transform(df[['BloodPressure']])
@@ -68,6 +73,26 @@ df[['BMI']] = imputer_bmi.fit_transform(df[['BMI']])
 df.isnull().sum()
 
 #%%
+glucose = df['Glucose'].values
+sns.distplot(glucose)
+
+#%%
+bp = df['BloodPressure'].values
+sns.distplot(bp)
+
+#%%
+st = df['SkinThickness'].values
+sns.distplot(st)
+
+#%%
+insulin = df['Insulin'].values
+sns.distplot(insulin)
+
+#%%
+bmi = df['BMI'].values
+sns.distplot(bmi)
+
+#%%
 correlation_matrix = df.corr()
 fig = plt.figure(figsize=(12,9))
 sns.heatmap(correlation_matrix, vmax=0.8, square = True)
@@ -75,7 +100,10 @@ plt.show()
 
 #%%
 
-df['Insulin'] = StandardScaler().fit_transform(df['Insulin'].values.reshape(-1,1))
+
+#df['Insulin'] = StandardScaler().fit_transform(df['Insulin'].values.reshape(-1,1))
+#df['BloodPressure'] = StandardScaler().fit_transform(df['BloodPressure'].values.reshape(-1,1))
+#df['SkinThickness'] = StandardScaler().fit_transform(df['SkinThickness'].values.reshape(-1,1))
 
 #df = df.drop(['Glucose', 'BloodPressure'], axis = 1)
 df.head()
