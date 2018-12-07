@@ -56,10 +56,11 @@ df.isnull().sum()
 
 #%%
 
+### IMPUTACAO
 imputer_glucose = Imputer(missing_values=np.nan, strategy='mean', axis=0)
 imputer_bloodpressure = Imputer(missing_values=np.nan, strategy='mean', axis=0)
-imputer_skinthickness = Imputer(missing_values=np.nan, strategy='mean', axis=0)
-imputer_insulin = Imputer(missing_values=np.nan, strategy='mean', axis=0)
+imputer_skinthickness = Imputer(missing_values=np.nan, strategy='median', axis=0)
+imputer_insulin = Imputer(missing_values=np.nan, strategy='median', axis=0)
 imputer_bmi = Imputer(missing_values=np.nan, strategy='mean', axis=0)
 
 df[['Glucose']] = imputer_glucose.fit_transform(df[['Glucose']])
@@ -69,46 +70,39 @@ df[['Insulin']] = imputer_insulin.fit_transform(df[['Insulin']])
 df[['BMI']] = imputer_bmi.fit_transform(df[['BMI']])
 
 
+### PESOS
+w_preg = 0.05
+w_gluc = 2.0
+w_bp = 1.06
+w_insulin = 2.00
+w_st = 0.05
+w_bmi = 1.0
+w_dpf = 0.89
+w_age = 0.01
+
+
+## NORMALIZACAO
+
+def norm(dataset):
+    dataNorm=((dataset-dataset.min())/(dataset.max()-dataset.min()))
+    return dataNorm
+
+# NORMALIZA
+df = norm(df)
+#%%
+
+
+## APLICA OS PESO
+df['Pregnancies'] = df['Pregnancies'] * w_preg
+df['Glucose'] = df['Glucose'] * w_gluc
+df['BloodPressure'] = df['BloodPressure'] * w_bp
+df['SkinThickness'] = df['SkinThickness'] * w_st
+df['Insulin'] = df['Insulin'] * w_insulin
+df['BMI'] = df['BMI'] * w_bmi
+df['DiabetesPedigreeFunction'] = df['DiabetesPedigreeFunction'] * w_dpf
+df['Age'] = df['Age'] * w_age
 
 df.isnull().sum()
-
-#%%
-glucose = df['Glucose'].values
-sns.distplot(glucose)
-
-#%%
-bp = df['BloodPressure'].values
-sns.distplot(bp)
-
-#%%
-st = df['SkinThickness'].values
-sns.distplot(st)
-
-#%%
-insulin = df['Insulin'].values
-sns.distplot(insulin)
-
-#%%
-bmi = df['BMI'].values
-sns.distplot(bmi)
-
-#%%
-correlation_matrix = df.corr()
-fig = plt.figure(figsize=(12,9))
-sns.heatmap(correlation_matrix, vmax=0.8, square = True)
-plt.show()
-
-#%%
-
-
-#df['Insulin'] = StandardScaler().fit_transform(df['Insulin'].values.reshape(-1,1))
-#df['BloodPressure'] = StandardScaler().fit_transform(df['BloodPressure'].values.reshape(-1,1))
-#df['SkinThickness'] = StandardScaler().fit_transform(df['SkinThickness'].values.reshape(-1,1))
-
-#df = df.drop(['Glucose', 'BloodPressure'], axis = 1)
-df.head()
-#imputer = Imputer(missing_values=np.nan, strategy='median', axis=0)
-#df[['fnlwgt']] = imputer.fit_transform(df[['fnlwgt']])
 
 #%%
 
@@ -132,6 +126,23 @@ neigh.fit(X, y)
 #realizando previsões com o arquivo de
 print(' - Aplicando modelo e enviando para o servidor')
 data_app = pd.read_csv('diabetes_app.csv')
+#%%
+
+#data_app = ((data_app-data_app.min())/(data_app.max()-data_app.min()))*20
+data_app = norm(data_app)
+
+df['Pregnancies'] = df['Pregnancies'] * w_preg
+df['Glucose'] = df['Glucose'] * w_gluc
+df['BloodPressure'] = df['BloodPressure'] * w_bp
+df['SkinThickness'] = df['SkinThickness'] * w_st
+df['Insulin'] = df['Insulin'] * w_insulin
+df['BMI'] = df['BMI'] * w_bmi
+df['DiabetesPedigreeFunction'] = df['DiabetesPedigreeFunction'] * w_dpf
+df['Age'] = df['Age'] * w_age
+
+#%%
+
+
 y_pred = neigh.predict(data_app)
 
 # Enviando previsões realizadas com o modelo para o servidor
