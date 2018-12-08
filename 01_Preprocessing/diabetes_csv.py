@@ -42,19 +42,18 @@ from sklearn.preprocessing import Imputer
 import missingno as msno
 import matplotlib.gridspec as gridspec
 
-
 df = pd.read_csv('diabetes_dataset.csv')
 df.head()
 print(df.shape)
 #print(df.shape)
 
 
-msno.matrix(df)
-#%%
+#msno.matrix(df)
+
 
 df.isnull().sum()
 
-#%%
+
 
 ### IMPUTACAO
 imputer_glucose = Imputer(missing_values=np.nan, strategy='mean', axis=0)
@@ -70,15 +69,24 @@ df[['Insulin']] = imputer_insulin.fit_transform(df[['Insulin']])
 df[['BMI']] = imputer_bmi.fit_transform(df[['BMI']])
 
 
-### PESOS
-w_preg = 0.05
-w_gluc = 2.0
-w_bp = 1.06
-w_insulin = 2.00
-w_st = 0.05
-w_bmi = 1.0
-w_dpf = 0.89
-w_age = 0.01
+#### PESOS
+#w_preg = 0.05
+#w_gluc = 2.0
+#w_bp = 1.06
+#w_insulin = 2.00
+#w_st = 0.05
+#w_bmi = 1.0
+#w_dpf = 0.89
+#w_age = 0.01
+
+w_preg = 0.01
+w_gluc = 1.1
+w_bp = 0.00 #feito
+w_insulin = 1.0
+w_st = 0.02 # subiu 0.1
+w_bmi = 1 #feito
+w_dpf = 1.0 ##feito 
+w_age = 0.02 # feito
 
 
 ## NORMALIZACAO
