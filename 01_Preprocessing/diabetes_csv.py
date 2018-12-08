@@ -14,7 +14,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import requests
 
 print('\n - Lendo o arquivo com o dataset sobre diabetes')
-data = pd.read_csv('diabetes_dataset.csv')
+data = pd.read_csv('diabetes_knn.csv')
 
 #%%
 
@@ -22,7 +22,6 @@ data = pd.read_csv('diabetes_dataset.csv')
 # main libraries
 import pandas as pd
 import numpy as np
-import time
 
 # visual libraries
 from matplotlib import pyplot as plt
@@ -42,7 +41,7 @@ from sklearn.preprocessing import Imputer
 import missingno as msno
 import matplotlib.gridspec as gridspec
 
-df = pd.read_csv('diabetes_dataset.csv')
+df = pd.read_csv('diabetes_knn.csv')
 df.head()
 print(df.shape)
 #print(df.shape)
@@ -56,18 +55,17 @@ df.isnull().sum()
 
 
 ### IMPUTACAO
-imputer_glucose = Imputer(missing_values=np.nan, strategy='mean', axis=0)
-imputer_bloodpressure = Imputer(missing_values=np.nan, strategy='mean', axis=0)
-imputer_skinthickness = Imputer(missing_values=np.nan, strategy='median', axis=0)
-imputer_insulin = Imputer(missing_values=np.nan, strategy='median', axis=0)
-imputer_bmi = Imputer(missing_values=np.nan, strategy='mean', axis=0)
-
-df[['Glucose']] = imputer_glucose.fit_transform(df[['Glucose']])
-df[['BloodPressure']] = imputer_bloodpressure.fit_transform(df[['BloodPressure']])
-df[['SkinThickness']] = imputer_skinthickness.fit_transform(df[['SkinThickness']])
-df[['Insulin']] = imputer_insulin.fit_transform(df[['Insulin']])
-df[['BMI']] = imputer_bmi.fit_transform(df[['BMI']])
-
+#imputer_glucose = Imputer(missing_values=np.nan, strategy='median', axis=0) #sucetivel
+#imputer_bloodpressure = Imputer(missing_values=np.nan, strategy='mean', axis=0)
+#imputer_skinthickness = Imputer(missing_values=np.nan, strategy='mean', axis=0)
+#imputer_insulin = Imputer(missing_values=np.nan, strategy='median', axis=0) #sucetivel
+#imputer_bmi = Imputer(missing_values=np.nan, strategy='mean', axis=0)
+#
+#df[['Glucose']] = imputer_glucose.fit_transform(df[['Glucose']])
+#df[['BloodPressure']] = imputer_bloodpressure.fit_transform(df[['BloodPressure']])
+#df[['SkinThickness']] = imputer_skinthickness.fit_transform(df[['SkinThickness']])
+#df[['Insulin']] = imputer_insulin.fit_transform(df[['Insulin']])
+#df[['BMI']] = imputer_bmi.fit_transform(df[['BMI']])
 
 #### PESOS
 #w_preg = 0.05
@@ -79,12 +77,12 @@ df[['BMI']] = imputer_bmi.fit_transform(df[['BMI']])
 #w_dpf = 0.89
 #w_age = 0.01
 
-w_preg = 0.01
-w_gluc = 1.1
-w_bp = 0.00 #feito
-w_insulin = 1.0
-w_st = 0.02 # subiu 0.1
-w_bmi = 1 #feito
+w_preg = 1.01 #feito
+w_gluc = 1.34 # feito
+w_bp = 0.01 #feito
+w_insulin = 1.0 # feito
+w_st = 0.01 # feito
+w_bmi = 1.1 #feito
 w_dpf = 1.0 ##feito 
 w_age = 0.02 # feito
 
@@ -97,6 +95,8 @@ def norm(dataset):
 
 # NORMALIZA
 df = norm(df)
+
+
 #%%
 
 
@@ -147,6 +147,8 @@ df['Insulin'] = df['Insulin'] * w_insulin
 df['BMI'] = df['BMI'] * w_bmi
 df['DiabetesPedigreeFunction'] = df['DiabetesPedigreeFunction'] * w_dpf
 df['Age'] = df['Age'] * w_age
+
+
 
 #%%
 
